@@ -1,0 +1,42 @@
+{
+  "name": "Meridian Markets",
+  "short_name": "Markets",
+  "description": "Personal market data dashboard with watchlists, portfolio, and real-time tracking.",
+  "display": "standalone",
+  "display_override": ["window-controls-overlay", "minimal-ui", "standalone"],
+  "background_color": "#f7f8fa",
+  "theme_color": "#ffffff",
+  "orientation": "any",
+  "scope": "/",
+  "id": "/",
+  "start_url": "/?source=pwa",
+  "categories": ["finance", "business", "productivity"],
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Watchlist",
+      "short_name": "Watchlist",
+      "description": "View your watchlist",
+      "url": "/?source=pwa-shortcut-watchlist"
+    },
+    {
+      "name": "Portfolio",
+      "short_name": "Portfolio",
+      "description": "View your portfolio",
+      "url": "/?source=pwa-shortcut-portfolio"
+    }
+  ]
+}

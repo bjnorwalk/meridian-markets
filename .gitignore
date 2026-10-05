@@ -1,0 +1,16 @@
+node_modules/
+dist/
+build/
+cmake-build*/
+.env
+.env.*
+!.env.example
+*.db
+*.sqlite
+*.sqlite3
+*.db-wal
+*.db-shm
+*.log
+save.dat
+server/data/
+data/
