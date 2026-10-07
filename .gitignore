@@ -1,7 +1,9 @@
+# Dependencies and build output
 node_modules/
 dist/
-build/
-cmake-build*/
+*.tsbuildinfo
+
+# Local configuration and databases
 .env
 .env.*
 !.env.example
@@ -10,7 +12,9 @@ cmake-build*/
 *.sqlite3
 *.db-wal
 *.db-shm
-*.log
-save.dat
 server/data/
 data/
+
+# Logs and operating system files
+*.log
+.DS_Store

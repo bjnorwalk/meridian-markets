@@ -1,48 +1,59 @@
 # Meridian Markets
 
-A full-stack market dashboard by William Norwalk, built with React, TypeScript, Node.js, SQLite, and Alpaca market data.
+A market dashboard built with React, TypeScript, Node.js, SQLite, and Alpaca data.
+It brings price history, stock snapshots, bid/ask data, symbol search, and charts
+into one workspace. Accounts keep portfolios and watchlists in a local database.
 
-## What it demonstrates
-
-- Stock snapshots, price history, bid/ask data, volume, symbol search, and interactive charts.
-- Authenticated user accounts with persistent portfolios and watchlists.
-- A server-side market-data adapter that keeps API credentials out of the browser.
-- Deployment configuration for Railway and a Docker-based Node service.
+Market requests go through a server-side adapter so provider credentials stay
+out of the browser. Some views fall back to demo data when live data is not
+available. Provider permissions determine which feeds can be used.
 
 ## Run locally
 
-Use Node.js 24 (the server uses `node:sqlite`).
+Use Node.js 24; the server uses `node:sqlite`.
 
 ```sh
 npm ci
 npm run dev
 ```
 
-Open http://localhost:5180. For live market data, copy `.env.example` to `.env` and add your own Alpaca credentials. Some views have fallback/demo data; live-data availability depends on your provider permissions. The database is created locally. No production users or portfolios are included.
+Open [localhost:5180](http://localhost:5180). For live data, copy `.env.example`
+to `.env` and add your own Alpaca credentials. The database is created locally;
+the repository does not include user accounts or portfolios.
+
+## Checks
 
 ```sh
 npm run lint
-npm run build
 npm test
+npm run build
 ```
 
-The smoke tests start local services; use a disposable local data directory when testing. For a production-style local run, build first, then use `npm start` (default port 4173).
+Smoke tests cover authentication, market endpoints, and strategy behavior. They
+use local test data. For a production-style local run, build first and run
+`npm start`, which defaults to port 4173 unless `PORT` is set.
 
-## Architecture
+## Implementation
 
-| Area | Responsibility |
-|---|---|
-| `src/components/` | Charts, watchlists, portfolio and analysis views |
-| `src/hooks/useMarketData.ts` | Loading and refresh behavior |
-| `src/services/` | API access and demo data providers |
-| `server/alpacaClient.mjs` | Market provider integration |
-| `server/authApi.mjs`, `server/userStore.mjs` | Accounts and persistence |
-| `server/start.mjs` | Production HTTP service |
+| Location                                     | Responsibility                                    |
+| -------------------------------------------- | ------------------------------------------------- |
+| `src/components/`                            | Charts, watchlists, portfolio, and analysis views |
+| `src/hooks/useMarketData.ts`                 | Loading and refresh behavior                      |
+| `src/services/`                              | API clients and demo data providers               |
+| `server/alpacaClient.mjs`                    | Market provider requests                          |
+| `server/authApi.mjs`, `server/userStore.mjs` | Accounts and SQLite storage                       |
+| `server/start.mjs`                           | Production HTTP server                            |
+
+The source also includes screeners, strategy tools, and an optional market chat.
+Chat uses Ollama or Groq and needs its own service configuration. Email and
+notifications also need separate configuration. These are application features,
+not requirements for running the core dashboard.
 
 ## Deployment
 
-The repository includes `Dockerfile` and `railway.json`. Configure credentials in the hosting environment, set `PORT` to your service port, and mount persistent storage at the configured `DATA_DIR`. GitHub Pages cannot run this Node/SQLite backend.
+`Dockerfile` and `railway.json` describe the Node deployment. Set credentials in
+the hosting environment, set `PORT` for the service, and point `DATA_DIR` at
+persistent storage. GitHub Pages cannot run the Node/SQLite backend.
 
-## Scope
-
-This is a portfolio snapshot of the application. The source includes additional screener, strategy, and optional AI features beyond the core dashboard. Those features may need additional services and configuration. Market data and analysis are presented for demonstration; no live trading credentials or customer data are distributed.
+This is a demonstration application. Data may be delayed or synthetic, and the
+repository does not include live trading credentials or customer data.
