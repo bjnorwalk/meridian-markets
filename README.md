@@ -8,6 +8,10 @@ Market requests go through a server-side adapter so provider credentials stay
 out of the browser. Some views fall back to demo data when live data is not
 available. Provider permissions determine which feeds can be used.
 
+Fundamentals also use Yahoo Finance endpoints. Some responses currently fail
+schema validation, which the server logs. Those fields may remain missing even
+when the local app and tests run successfully.
+
 ## Run locally
 
 Use Node.js 24; the server uses `node:sqlite`.
