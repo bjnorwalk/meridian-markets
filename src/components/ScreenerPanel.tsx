@@ -5,7 +5,7 @@ import {
   useReactTable, getCoreRowModel, getSortedRowModel,
   createColumnHelper, flexRender,
 } from '@tanstack/react-table'
-import type { SortingState } from '@tanstack/react-table'
+import type { SortingState, Header, Table, Row } from '@tanstack/react-table'
 
 interface ScreenerItem {
   symbol: string; price: number; change: number; volume: number;
@@ -197,17 +197,17 @@ function RangeInput({ label, min, max, onMinChange, onMaxChange, presets }: {
   )
 }
 
-function TableHeader({ header }: { header: any }) {
+function TableHeader<T>({ header }: { header: Header<T, unknown> }) {
   const handler = header.column.getToggleSortingHandler()
   return (
     <th className="screener-sort-th" onClick={handler}>
       {flexRender(header.column.columnDef.header, header.getContext())}
-      {{ asc: ' ↑', desc: ' ↓' }[header.column.getIsSorted() as string] ?? ''}
+      {header.column.getIsSorted() === 'asc' ? ' ↑' : header.column.getIsSorted() === 'desc' ? ' ↓' : ''}
     </th>
   )
 }
 
-export function ScreenerPanel({ onSelectSymbol, userSymbols = [] }: { onSelectSymbol: (item: any) => void; userSymbols?: string[] }) {
+export function ScreenerPanel({ onSelectSymbol, userSymbols = [] }: { onSelectSymbol: (item: ScreenerItem | FilterResult) => void; userSymbols?: string[] }) {
   // Category (old) mode
   const [activeSection, setActiveSection] = useState<SectionKey>('gainers')
   const [catData, setCatData] = useState<ScreenerData | null>(null)
@@ -289,8 +289,8 @@ export function ScreenerPanel({ onSelectSymbol, userSymbols = [] }: { onSelectSy
       if (!res.ok) { const e = await res.json(); throw new Error(e.error?.message || 'Search failed') }
       const data: FilterSearchResponse = await res.json()
       setFResults(data)
-      if (data.sectors && allSectors.length === 0) setAllSectors(data.sectors)
-      if (data.industries && allIndustries.length === 0) setAllIndustries(data.industries)
+      if (data.sectors) setAllSectors(current => current.length === 0 ? data.sectors : current)
+      if (data.industries) setAllIndustries(current => current.length === 0 ? data.industries : current)
     } catch (err: unknown) {
       setFError(err instanceof Error ? err.message : 'Search failed')
     } finally { setFLoading(false) }
@@ -337,7 +337,7 @@ export function ScreenerPanel({ onSelectSymbol, userSymbols = [] }: { onSelectSy
   ], [userSymbolSet])
 
   const catTable = useReactTable({
-    data: catItems, columns: catColumns as any,
+    data: catItems, columns: catColumns,
     state: { sorting: catSorting },
     onSortingChange: setCatSorting,
     getCoreRowModel: getCoreRowModel(),
@@ -376,7 +376,7 @@ export function ScreenerPanel({ onSelectSymbol, userSymbols = [] }: { onSelectSy
   ], [userSymbolSet])
 
   const fTable = useReactTable({
-    data: fItems, columns: fColumns as any,
+    data: fItems, columns: fColumns,
     state: { sorting: fSorting },
     onSortingChange: setFSorting,
     getCoreRowModel: getCoreRowModel(),
@@ -385,12 +385,12 @@ export function ScreenerPanel({ onSelectSymbol, userSymbols = [] }: { onSelectSy
 
   const totalPages = fResults ? Math.ceil(fResults.total / pageSize) : 0
 
-  function renderTHead(table: { getHeaderGroups: () => Array<{ id: string; headers: any[] }> }) {
+  function renderTHead<T>(table: Table<T>) {
     return (
       <thead>
         {table.getHeaderGroups().map(hg => (
           <tr key={hg.id}>
-            {hg.headers.map((h: any) => (
+            {hg.headers.map((h) => (
               <TableHeader key={h.id} header={h} />
             ))}
           </tr>
@@ -399,12 +399,12 @@ export function ScreenerPanel({ onSelectSymbol, userSymbols = [] }: { onSelectSy
     )
   }
 
-  function renderTBody(rows: Array<{ id: string; original: any; getVisibleCells: () => any[] }>) {
+  function renderTBody<T extends ScreenerItem | FilterResult>(rows: Row<T>[]) {
     return (
       <tbody>
         {rows.map(row => (
           <tr key={row.id} className="screener-row" onClick={() => onSelectSymbol(row.original)}>
-            {row.getVisibleCells().map((cell: any) => (
+            {row.getVisibleCells().map((cell) => (
               <td key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</td>
             ))}
           </tr>

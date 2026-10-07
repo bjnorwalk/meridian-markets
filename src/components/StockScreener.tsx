@@ -240,7 +240,8 @@ export function StockScreener({
   const toggleSector = (sector: string) => {
     setFilters((prev) => {
       const next = new Set(prev.sectors)
-      next.has(sector) ? next.delete(sector) : next.add(sector)
+      if (next.has(sector)) next.delete(sector)
+      else next.add(sector)
       return { ...prev, sectors: next, preset: 'all' }
     })
   }

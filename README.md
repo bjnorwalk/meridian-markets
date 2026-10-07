@@ -24,10 +24,11 @@ the repository does not include user accounts or portfolios.
 ## Checks
 
 ```sh
-npm run lint
-npm test
-npm run build
+npm run check
 ```
+
+This runs lint, smoke tests, and the production build. GitHub Actions runs the same
+checks on pushes and pull requests. Each command can also be run separately.
 
 Smoke tests cover authentication, market endpoints, and strategy behavior. They
 use local test data. For a production-style local run, build first and run
